@@ -20,6 +20,26 @@ class App {
     Sidebar.init();
 
     this.initUser();
+
+    //Слушатель/обработчик события для кнопки Регистрация
+    //Предназначен открыть форму
+    const registrationBtn = document.querySelector('.menu-item_register');
+    registrationBtn.addEventListener('click', () => this.openModal('register'));
+
+    console.log(registrationBtn);
+
+    //Слушатель/обработчик события для кнопки Вход
+    //Предназначен открыть форму
+    const logInBtn = document.querySelector('.menu-item_login');
+    logInBtn.addEventListener('click', () => this.openModal('login'));
+  }
+
+  //Метод, чтобы открыть соответствующее модальное окно
+  static openModal(name) {
+    const modalWindow = this.getModal(name);
+    if (modalWindow) {
+      modalWindow.open(); // Здесь вызывается метод open() у модального окна
+    };
   }
 
   /**
