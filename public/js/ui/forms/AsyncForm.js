@@ -13,8 +13,8 @@ class AsyncForm {
    * через registerEvents()
    * */
   constructor(element) {
-    if(!element) {
-      throw new Error('Элемент не передан');
+    if (!element) {
+      throw new Error('Form element not found');
     }
     this.element = element;
     this.registerEvents();
@@ -25,8 +25,8 @@ class AsyncForm {
    * вызывает метод submit()
    * */
   registerEvents() {
-    this.element.addEventListener('submit', (event) => {
-      event.preventDefault();
+    this.element.addEventListener('submit', e => {
+      e.preventDefault();
       this.submit();
     });
   }
@@ -40,17 +40,11 @@ class AsyncForm {
    * */
   getData() {
     const formData = new FormData(this.element);
-    const data = {};
-    for(const pair of formData) {
-      const [key, value] = pair;
-      data[key] = value;
-    }
-    return data;
+    return Object.fromEntries(formData);
   }
 
-  //Данный метод модифицируется у дочернего класса
-  onSubmit(options){
-
+  onSubmit(options) {
+    throw new Error('Method must be implemented');
   }
 
   /**
@@ -59,6 +53,27 @@ class AsyncForm {
    * */
   submit() {
     const data = this.getData();
-    this.onSubmit(data);
+    
+    this.onSubmit(data)
+      .then(response => {
+        if (response && response.success) {
+          this.element.reset();
+          this.success(response);
+        } else {
+          throw new Error(response?.error || 'Произошла ошибка');
+        }
+      })
+      .catch(e => {
+        if (typeof this.error === 'function') {
+          this.error(e);
+        } else {
+          console.error(e);
+          alert(e.message || 'Произошла ошибка');
+        }
+      });
+  }
+
+  success(response) {
+    // Переопределяется в дочерних классах
   }
 }

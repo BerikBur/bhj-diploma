@@ -5,6 +5,48 @@
       "email": "demo@demo",
       "password": "demo",
       "id": "1"
+    },
+    {
+      "name": "имя7",
+      "email": "name7@mail.ru",
+      "password": "name",
+      "id": "ik6z7uzm3ql7f2j"
+    },
+    {
+      "name": "name0",
+      "email": "name0@mail.ru",
+      "password": "name",
+      "id": "ik6z8e0m3qll7z7"
+    },
+    {
+      "name": "Алекс",
+      "email": "aleks@mail.ru",
+      "password": "name",
+      "id": "ik6z8h7m3qlmjjk"
+    },
+    {
+      "name": "Ник",
+      "email": "nik@mail.ru",
+      "password": "name",
+      "id": "ik6z8ydm3qlsitg"
+    },
+    {
+      "name": "Один",
+      "email": "odin@mail.ru",
+      "password": "name",
+      "id": "ik6z9gem3qlz2z0"
+    },
+    {
+      "name": "Чел",
+      "email": "chel@mail.ru",
+      "password": "name",
+      "id": "ik6z9u1m3qm2t4g"
+    },
+    {
+      "name": "Имя Имен",
+      "email": "name34@mail.ru",
+      "password": "name",
+      "id": "ik6zhrxm3qprj6d"
     }
   ],
   "accounts": [
@@ -22,6 +64,21 @@
       "name": "Бизнес",
       "user_id": "1",
       "id": "3"
+    },
+    {
+      "name": "Новый",
+      "user_id": "ik6z9u1m3qm2t4g",
+      "id": "ik6zgw1m3qpe0yz"
+    },
+    {
+      "name": "Счет",
+      "user_id": "ik6z9u1m3qm2t4g",
+      "id": "ik6zh59m3qpgpja"
+    },
+    {
+      "name": "Доходы",
+      "user_id": "ik6zhrxm3qprj6d",
+      "id": "ik6zi5um3qpwzd4"
     }
   ],
   "transactions": [
@@ -159,6 +216,15 @@
       "sum": 300000,
       "type": "expense",
       "user_id": "1"
+    },
+    {
+      "id": "ik6zhc0m3qpkvgf",
+      "type": "income",
+      "name": "15",
+      "sum": 15000,
+      "account_id": "ik6zgw1m3qpe0yz",
+      "user_id": "ik6z9u1m3qm2t4g",
+      "created_at": "2024-11-21T02:44:01.982Z"
     }
   ]
 }

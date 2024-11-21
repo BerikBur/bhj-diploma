@@ -25,9 +25,25 @@ class Modal {
    * (с помощью метода Modal.onClose)
    * */
   registerEvents() {
-    const closeBtns = this.element.querySelectorAll('[data-dismiss="modal"]');
-    closeBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => this.onClose(e));
+    // Находим все кнопки закрытия в модальном окне
+    const closeButtons = this.element.querySelectorAll('[data-dismiss="modal"]');
+    const closeIcon = this.element.querySelector('.close');
+    
+    // Добавляем обработчик для каждой кнопки закрытия
+    closeButtons.forEach(button => {
+      button.addEventListener('click', () => this.close());
+    });
+
+    // Добавляем обработчик для иконки закрытия (×)
+    if (closeIcon) {
+      closeIcon.addEventListener('click', () => this.close());
+    }
+
+    // Закрытие по клику на затемненную область (опционально)
+    this.element.addEventListener('click', (e) => {
+      if (e.target === this.element) {
+        this.close();
+      }
     });
   }
 
@@ -44,11 +60,13 @@ class Modal {
    * */
   open() {
     this.element.style.display = 'block';
+    document.body.classList.add('modal-open');
   }
   /**
    * Закрывает окно: удаляет CSS-свойство display
    * */
   close(){
     this.element.style.display = 'none';
+    document.body.classList.remove('modal-open');
   }
 }

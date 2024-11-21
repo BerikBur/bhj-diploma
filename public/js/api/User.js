@@ -19,7 +19,8 @@ class User {
    * пользователе из локального хранилища.
    * */
   static unsetCurrent() {
-    localStorage.removeItem('currentUser');
+    localStorage.clear();
+    localStorage.setItem('logout', 'true');
   }
 
   /**
@@ -27,13 +28,15 @@ class User {
    * из локального хранилища
    * */
   static current() {
-    const user = localStorage.getItem('currentUser');
-    return user ? JSON.parse(user) : null;
+    return createRequest({
+      url: `${this.URL}/current`,
+      method: 'GET'
+    });
   }
 
   /**
-   * Получает информацию о текущем
-   * авторизованном пользователе.
+   * Получает нформацию о текущем
+   * авторизованном ползователе.
    * */
   static fetch(callback) {
     const user = this.current();
@@ -50,18 +53,11 @@ class User {
    * сохранить пользователя через метод
    * User.setCurrent.
    * */
-  static login(data, callback) {
-    createRequest({
+  static login(data) {
+    return createRequest({
       url: this.URL + '/login',
       method: 'POST',
-      responseType: 'json',
-      data,
-      callback: (err, response) => {
-        if (response && response.user) {
-          this.setCurrent(response.user);
-        }
-        callback(err, response);
-      }
+      data
     });
   }
 
@@ -71,18 +67,11 @@ class User {
    * сохранить пользователя через метод
    * User.setCurrent.
    * */
-  static register(data, callback) {
-    createRequest({
+  static register(data) {
+    return createRequest({
       url: this.URL + '/register',
       method: 'POST',
-      responseType: 'json',
-      data,
-      callback: (err, response) => {
-        if (response && response.user) {
-          this.setCurrent(response.user);
-        }
-        callback(err, response);
-      }
+      data
     });
   }
 
@@ -91,14 +80,12 @@ class User {
    * выхода необходимо вызвать метод User.unsetCurrent
    * */
   static logout(callback) {
-    createRequest({
-      url: this.URL + '/logout',
+    return createRequest({
+      url: `${this.URL}/logout`,
       method: 'POST',
-      responseType: 'json',
-      data,
       callback: (err, response) => {
-        if (response && response.user) {
-          this.unsetCurrent(response.user);
+        if (response && response.success) {
+          this.unsetCurrent();
         }
         callback(err, response);
       }
