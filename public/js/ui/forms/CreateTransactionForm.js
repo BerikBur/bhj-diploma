@@ -62,15 +62,15 @@ class CreateTransactionForm extends AsyncForm {
       const modalName = this.element.id === 'new-income-form' ? 'newIncome' : 'newExpense';
       App.getModal(modalName).close()
       
-      // Увеличили задержку перед обновлением до 3 секунд
+      // Устанавливаем задержку перед обновлением
       setTimeout(() => {
         App.update()
-      }, 3000)
+      }, 200)
     } else {
       throw new Error(response?.error || 'Ошибка создания транзакции');
     }
   }
-
+  // Обработка ошибок
   error(error) {
     console.error('Error creating transaction:', error)
     alert(error.message || 'Не удалось создать транзакцию. Попробуйте позже.')

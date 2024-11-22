@@ -13,7 +13,7 @@ class Modal {
    * */
   constructor(element){
     if(!element) {
-      throw new Error('Элемента не передан')
+      throw new Error('Элемент не передан')
     }
     this.element = element;
     this.registerEvents();
@@ -46,7 +46,7 @@ class Modal {
       closeIcon.addEventListener('click', () => this.close());
     }
 
-    // Закрытие по клику на затемненную область (опционально)
+    // Закрытие окна по клику на область вне модального окна
     this.element.addEventListener('click', (e) => {
       if (e.target === this.element) {
         this.close();

@@ -26,9 +26,7 @@ class App {
 
   //Метод, чтобы открыть соответствующее модальное окно
   static openModal(name) {
-    console.log('openModal', name);
     const modalWindow = this.getModal(name);
-    console.log('modalWindow', modalWindow);
     if (modalWindow) {
       modalWindow.open(); // Здесь вызывается метод open() у модального окна
     };

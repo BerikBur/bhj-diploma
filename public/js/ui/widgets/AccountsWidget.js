@@ -66,14 +66,15 @@ class AccountsWidget {
       const response = await Account.list(null);
       
       if (!response || !response.success) {
-        console.error('Failed to load accounts:', response);
+        console.error('Ошибка при получении списка счетов:', response);
         return;
       }
-      
+      // Очищаем список счетов
       this.clear();
+      // Отрисовываем список счетов
       this.renderItem(response.data);
     } catch (err) {
-      console.error('Error loading accounts:', err);
+      console.error('Ошибка при получении списка счетов:', err);
     }
   }
 
