@@ -46,7 +46,7 @@ class Sidebar {
     //Слушатель/обработчик события для кнопки Выход
     //Предназначен для выхода из системы
     const logoutButton = document.querySelector('.menu-item_logout a');
-    
+    // Обработчик события для кнопки Выход
     if (logoutButton) {
       logoutButton.addEventListener('click', (e) => {
         e.preventDefault();

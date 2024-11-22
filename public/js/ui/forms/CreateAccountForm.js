@@ -29,7 +29,7 @@ class CreateAccountForm extends AsyncForm {
   }
 
   error(error) {
-    console.error('Error creating account:', error);
-    alert('Не удалось создать счет. Попробуйте позже.');
+    console.error('Ошибка при создании счета:', error);
+    alert('Такой счёт уже существует.');
   }
 }

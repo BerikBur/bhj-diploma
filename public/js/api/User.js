@@ -20,7 +20,6 @@ class User {
    * */
   static unsetCurrent() {
     localStorage.clear();
-    //localStorage.setItem('logout', 'true');
   }
 
   /**
@@ -28,7 +27,6 @@ class User {
    * из локального хранилища
    * */
   static current() {
-    //console.log('Current user from localStorage:', localStorage.getItem('currentUser'));
     const userJSON = localStorage.getItem('currentUser');
     return userJSON ? JSON.parse(userJSON) : null;
   }

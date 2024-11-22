@@ -26,7 +26,7 @@ class TransactionsPage {
     if (this.lastOptions) {
       setTimeout(() => {
         this.render(this.lastOptions);
-      }, 200);
+      }, 100);
     }
   }
 
@@ -73,16 +73,17 @@ class TransactionsPage {
     }
 
     try {
+        //debugger;
         const response = await Account.remove(this.lastOptions.account_id);
         if (response && response.success) {
-            this.clear();
-            try {
-                await App.updateWidgets();
-                await App.updateForms();
-            } catch (updateError) {
-                console.error('Ошибка при обновлении интерфейса:', updateError);
-                alert('Счёт удален, но не удалось обновить интерфейс. Пожалуйста, перезагрузите страницу.');
-            }
+          // Очищаем страницу 
+          this.clear();
+          // Обновляем виджеты
+          App.updateWidgets();
+          // Обновляем формы
+          App.updateForms();
+          // Обновляем страницы
+          App.updatePages();
         }
     } catch (err) {
         console.error('Ошибка при удалении счета:', err);
@@ -112,8 +113,8 @@ class TransactionsPage {
                 setTimeout(() => {
                   App.getWidget('accounts').update();
                   resolve();
-                }, 300);
-              }, 300);
+                }, 200);
+              }, 200);
             });
           } else {
             throw new Error(response?.error || 'Ошибка при удалении транзакции');
@@ -143,10 +144,9 @@ class TransactionsPage {
     try {
         // Получаем информацию о счете
         const response = await Account.get(options.account_id);
-        console.log('TransactionsPage got response:', response);
         if (response && response.success) {
             const account = response.data;
-            
+            // Отрисовываем заголовок
             this.renderTitle(account.name);
 
             // Получаем список транзакций
@@ -164,23 +164,19 @@ class TransactionsPage {
    * Устанавливает заголовок: «Название счёта»
    * */
   clear() {
-    const contentWrapper = this.element.querySelector('.content-wrapper');
-    if (contentWrapper) {
-        contentWrapper.innerHTML = `
-            <section class="content-header">
-                <h1>
-                    <span class="content-title"></span>
-                    <small class="content-description"></small>
-                    <button class="btn btn-danger remove-account" style="display: none;">
-                        <span class="fa fa-trash"></span>
-                        Удалить счёт
-                    </button>
-                </h1>
-            </section>
-            <section class="content">
-            </section>
-        `;
-    }
+    // Очищаем заголовок
+    const contentTitle = this.element.querySelector('.content-title');
+    contentTitle.textContent = 'Название счёта';
+    // Очищаем описание
+    const contentDescription = this.element.querySelector('.content-description');
+    contentDescription.textContent = 'Счёт';
+    // Скрываем кнопку удаления счета
+    const removeButton = this.element.querySelector('.remove-account');
+    if (removeButton) {
+        removeButton.style.display = 'none';
+    };
+    
+    // Очищаем данные о последнем выбранном счете
     this.lastOptions = null;
     
     // Вызываем renderTransactions с пустым массивом
@@ -191,9 +187,11 @@ class TransactionsPage {
    * Устанавливает заголовок в элемент .content-title
    * */
   renderTitle(name) {
+    // Получаем элементы заголовка и описания
     const titleElement = this.element.querySelector('.content-title');
     const descriptionElement = this.element.querySelector('.content-description');
     
+    // Устанавливаем заголовок и описание
     if (titleElement) {
         titleElement.textContent = name;
     }
@@ -262,11 +260,13 @@ class TransactionsPage {
    * используя getTransactionHTML
    * */
   renderTransactions(data) {
+    // Получаем элемент контента
     const content = this.element.querySelector('.content');
     if (!content) {
       throw new Error('Не передан элемент .content');
     }
 
+    // Отрисовываем список транзакций
     if (data.length) {
       content.innerHTML = data
         .map(item => this.getTransactionHTML(item))

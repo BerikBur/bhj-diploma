@@ -161,6 +161,18 @@
       "email": "43@mail.ru",
       "password": "43",
       "id": "ik6z16jsm3r6sqf5"
+    },
+    {
+      "name": "56",
+      "email": "56@mail.ru",
+      "password": "56",
+      "id": "ik6z1olmm3sar52o"
+    },
+    {
+      "name": "21",
+      "email": "21@mail.ru",
+      "password": "21",
+      "id": "ik6z1rjgm3sbz6mc"
     }
   ],
   "accounts": [
@@ -230,14 +242,14 @@
       "id": "ik6z13vlm3r4gnev"
     },
     {
-      "name": "ыфвсфывс",
-      "user_id": "ik6z16jsm3r6sqf5",
-      "id": "ik6z1hbkm3s7au4v"
+      "name": "21",
+      "user_id": "ik6z1rjgm3sbz6mc",
+      "id": "ik6z1rkhm3sbzax1"
     },
     {
-      "name": "мфавымва",
-      "user_id": "ik6z16jsm3r6sqf5",
-      "id": "ik6z1i2om3s7l856"
+      "name": "212",
+      "user_id": "ik6z1rjgm3sbz6mc",
+      "id": "ik6z1s6um3sc8dhe"
     }
   ],
   "transactions": [
@@ -384,6 +396,33 @@
       "account_id": "ik6zgw1m3qpe0yz",
       "user_id": "ik6z9u1m3qm2t4g",
       "created_at": "2024-11-21T02:44:01.982Z"
+    },
+    {
+      "id": "ik6z1s9vm3sc8j59",
+      "type": "income",
+      "name": "121",
+      "sum": 12312,
+      "account_id": "ik6z1rkhm3sbzax1",
+      "user_id": "ik6z1rjgm3sbz6mc",
+      "created_at": "2024-11-22T06:06:03.500Z"
+    },
+    {
+      "id": "ik6z1sbqm3sc8tae",
+      "type": "income",
+      "name": "123",
+      "sum": 3214,
+      "account_id": "ik6z1s6um3sc8dhe",
+      "user_id": "ik6z1rjgm3sbz6mc",
+      "created_at": "2024-11-22T06:06:16.645Z"
+    },
+    {
+      "id": "ik6z1scxm3sc8wz7",
+      "type": "expense",
+      "name": "342",
+      "sum": 324,
+      "account_id": "ik6z1rkhm3sbzax1",
+      "user_id": "ik6z1rjgm3sbz6mc",
+      "created_at": "2024-11-22T06:06:21.426Z"
     }
   ]
 }

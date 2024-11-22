@@ -10,7 +10,7 @@ const createRequest = (options = {}) => {
             const method = options.method || 'GET';
             const url = options.url;
             const formData = options.data;
-            const retries = options.retries || 2; // уменьшаем количество попыток
+            const retries = options.retries || 2; // Устанавливаем количество попыток
             let attempt = 0;
 
             function tryRequest() {
@@ -18,13 +18,13 @@ const createRequest = (options = {}) => {
                 
                 xhr.open(method, url);
 
-                xhr.timeout = 3000; // уменьшаем таймаут до 3 секунд
+                xhr.timeout = 1000; // Таймаут запроса
 
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         resolve(xhr.response);
                     } else if (attempt < retries) {
-                        setTimeout(tryRequest, 500); // уменьшаем задержку до 500мс
+                        setTimeout(tryRequest, 500); // Устанавливаем задержку
                     } else {
                         reject(new Error(xhr.response?.error || `Ошибка ${xhr.status}`));
                     }
@@ -32,7 +32,7 @@ const createRequest = (options = {}) => {
 
                 xhr.onerror = function() {
                     if (attempt < retries) {
-                        setTimeout(tryRequest, 500); // уменьшаем задержку до 500мс
+                        setTimeout(tryRequest, 500); // Устанавливаем задержку
                     } else {
                         reject(new Error('Ошибка сети'));
                     }
@@ -64,7 +64,7 @@ const createRequest = (options = {}) => {
             tryRequest();
 
         } catch (e) {
-            console.error('Ошибка в createRequest:', e);
+            console.error('Ошибка в функции запроса createRequest:', e);
             reject(e);
         }
     });
