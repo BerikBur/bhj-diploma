@@ -21,22 +21,14 @@ class App {
 
     this.initUser();
 
-    //Слушатель/обработчик события для кнопки Регистрация
-    //Предназначен открыть форму
-    const registrationBtn = document.querySelector('.menu-item_register');
-    registrationBtn.addEventListener('click', () => this.openModal('register'));
-
-    console.log(registrationBtn);
-
-    //Слушатель/обработчик события для кнопки Вход
-    //Предназначен открыть форму
-    const logInBtn = document.querySelector('.menu-item_login');
-    logInBtn.addEventListener('click', () => this.openModal('login'));
+    
   }
 
   //Метод, чтобы открыть соответствующее модальное окно
   static openModal(name) {
+    console.log('openModal', name);
     const modalWindow = this.getModal(name);
+    console.log('modalWindow', modalWindow);
     if (modalWindow) {
       modalWindow.open(); // Здесь вызывается метод open() у модального окна
     };
@@ -69,11 +61,11 @@ class App {
    * */
   static initModals() {
     this.modals = {
-      register: new Modal(document.querySelector("#modal-register")),
-      login: new Modal(document.querySelector("#modal-login")),
-      createAccount: new Modal(document.querySelector("#modal-new-account")),
-      newIncome: new Modal(document.querySelector("#modal-new-income")),
-      newExpense: new Modal(document.querySelector("#modal-new-expense")),
+      createAccount: new Modal(document.querySelector('#modal-new-account')),
+      newIncome: new Modal(document.querySelector('#modal-new-income')),
+      newExpense: new Modal(document.querySelector('#modal-new-expense')),
+      login: new Modal(document.querySelector('#modal-login')),
+      register: new Modal(document.querySelector('#modal-register'))
     };
   }
 
@@ -141,7 +133,7 @@ class App {
 
   /**
    * Возвращает форму по названию
-   * Обращается к объекту App.forms и извлекает
+   * Обращатся к объекту App.forms и извлекает
    * из него свойство formName:
    * App.getWidget( 'transactions' ); // извелекает App.forms.transactions
    * */

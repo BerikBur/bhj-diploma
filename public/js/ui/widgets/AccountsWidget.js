@@ -13,9 +13,9 @@ class AccountsWidget {
    * Если переданный элемент не существует,
    * необходимо выкинуть ошибку.
    * */
-  constructor( element ) {
+  constructor(element) {
     if (!element) {
-      throw new Error('Element not found');
+      throw new Error('Элемент не передан');
     }
     this.element = element;
     
@@ -31,7 +31,7 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
-    this.element.addEventListener('click', e => {
+    this.element.addEventListener('click', (e) => {
       e.preventDefault();
       
       // Ищем кнопку создания нового счёта
@@ -61,14 +61,20 @@ class AccountsWidget {
    * Отображает список полученных счетов с помощью
    * метода renderItem()
    * */
-  update() {
-    Account.list()
-        .then(accounts => {
-            if (accounts) {
-                this.clear();
-                this.renderItem(accounts);
-            }
-        });
+  async update() {
+    try {
+      const response = await Account.list(null);
+      
+      if (!response || !response.success) {
+        console.error('Failed to load accounts:', response);
+        return;
+      }
+      
+      this.clear();
+      this.renderItem(response.data);
+    } catch (err) {
+      console.error('Error loading accounts:', err);
+    }
   }
 
   /**
@@ -77,14 +83,18 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-    const accountsList = this.element.querySelector('.accounts-panel');
-    if (accountsList) {
-        const header = accountsList.querySelector('.header');
-        accountsList.innerHTML = '';
-        if (header) {
-            accountsList.appendChild(header);
-        }
-    }
+    // Сохраняем структуру с заголовком, удаляя только счета
+    this.element.innerHTML = `
+      <li class="header">
+          Счета
+          <div class="pull-right">
+              <span class="create-account label label-success">
+                  <span class="fa fa-plus"></span>
+                  Новый счёт
+              </span>
+          </div>
+      </li>
+    `;
   }
 
   /**
@@ -94,7 +104,7 @@ class AccountsWidget {
    * счёта класс .active.
    * Вызывает App.showPage( 'transactions', { account_id: id_счёта });
    * */
-  onSelectAccount( element ) {
+  onSelectAccount(element) {
     const accounts = this.element.querySelectorAll('.account');
     accounts.forEach(account => account.classList.remove('active'));
     element.classList.add('active');
@@ -109,13 +119,16 @@ class AccountsWidget {
    * item - объект с данными о счёте
    * */
   getAccountHTML(item) {
-    return `
-      <li class="account" data-id="${item.id}">
-        <a href="#/account/${item.id}">
+    const element = document.createElement('li');
+    element.className = 'account';  // Оставляем только класс account
+    element.dataset.id = item.id;
+    element.innerHTML = `
+        <a href="#">
           <span>${item.name}</span> /
-          <span>${item.sum || 0}</span>
+          <span>${item.sum} ₽</span>
         </a>
-      </li>`;
+    `;
+    return element;
   }
 
   /**
@@ -125,13 +138,9 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data) {
-    const accountsList = this.element.querySelector('.accounts-panel');
-    if (!accountsList) {
-        return;
-    }
-
     data.forEach(item => {
-        accountsList.insertAdjacentHTML('beforeend', this.getAccountHTML(item));
+        const element = this.getAccountHTML(item);
+        this.element.appendChild(element);
     });
   }
 }

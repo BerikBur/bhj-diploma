@@ -14,7 +14,7 @@ class AsyncForm {
    * */
   constructor(element) {
     if (!element) {
-      throw new Error('Form element not found');
+      throw new Error('Элемент не передан');
     }
     this.element = element;
     this.registerEvents();
@@ -44,7 +44,7 @@ class AsyncForm {
   }
 
   onSubmit(options) {
-    throw new Error('Method must be implemented');
+    throw new Error('Метод должен быть реализован');
   }
 
   /**

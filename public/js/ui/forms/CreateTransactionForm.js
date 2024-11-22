@@ -16,29 +16,18 @@ class CreateTransactionForm extends AsyncForm {
    * Получает список счетов с помощью Account.list
    * Обновляет в форме всплывающего окна выпадающий список
    * */
-  renderAccountsList() {
+  async renderAccountsList() {
     const select = this.element.querySelector('.accounts-select')
-    if (!select) {
-      return Promise.resolve()
+    try {
+      const response = await Account.list()
+      if (response && response.success) {
+        select.innerHTML = response.data.map(account => `
+          <option value="${account.id}">${account.name} (${account.sum}₽)</option>
+        `).join('')
+      }
+    } catch (e) {
+      console.error('Ошибка при получении списка счетов:', e)
     }
-
-    return Account.list()
-      .then(accounts => {
-        if (accounts.length) {
-          select.innerHTML = accounts
-            .map(account => `
-              <option value="${account.id}">
-                ${account.name} (${account.sum} ₽)
-              </option>
-            `).join('')
-        } else {
-          select.innerHTML = '<option value="">Нет доступных счетов</option>'
-        }
-      })
-      .catch(err => {
-        console.error('Failed to load accounts:', err)
-        select.innerHTML = '<option value="">Ошибка загрузки счетов</option>'
-      })
   }
 
   /**

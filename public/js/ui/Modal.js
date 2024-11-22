@@ -20,6 +20,13 @@ class Modal {
   }
 
   /**
+   * Получает форму в модальном окне
+   */
+  getForm() {
+    return this.element.querySelector('form');
+  }
+
+  /**
    * При нажатии на элемент с data-dismiss="modal"
    * должен закрыть текущее окно
    * (с помощью метода Modal.onClose)
@@ -61,6 +68,18 @@ class Modal {
   open() {
     this.element.style.display = 'block';
     document.body.classList.add('modal-open');
+    
+    if (this.element.id === 'modal-new-income' || this.element.id === 'modal-new-expense') {
+      const form = this.getForm();
+      if (form) {
+        // Получаем экземпляр формы из App
+        const formName = this.element.id === 'modal-new-income' ? 'createIncome' : 'createExpense';
+        const formObject = App.getForm(formName);
+        if (formObject) {
+          formObject.renderAccountsList();
+        }
+      }
+    }
   }
   /**
    * Закрывает окно: удаляет CSS-свойство display

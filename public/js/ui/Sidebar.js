@@ -32,6 +32,19 @@ class Sidebar {
    * Инициализирует работу всех кнопок авторизации и разлогинивания
    * */
   static initAuthLinks() {
+    // Инициализация кнопок Регистрации и Входа
+    //Слушатель/обработчик события для кнопки Регистрация
+    //Предназначен открыть форму
+    const registrationBtn = document.querySelector('.menu-item_register');
+    registrationBtn.addEventListener('click', () => App.openModal('register'));
+
+    //Слушатель/обработчик события для кнопи Вход
+    //Предназначен открыть форму
+    const logInBtn = document.querySelector('.menu-item_login');
+    logInBtn.addEventListener('click', () => App.openModal('login'));
+
+    //Слушатель/обработчик события для кнопки Выход
+    //Предназначен для выхода из системы
     const logoutButton = document.querySelector('.menu-item_logout a');
     
     if (logoutButton) {
@@ -40,9 +53,10 @@ class Sidebar {
         
         User.logout((err, response) => {
           if (response && response.success) {
-            // После успешного выхода перезагружаем страницу
-            window.location.reload();
-          }
+            App.setState('init');
+          } else {
+            throw new Error('Ошибка при выходе из системы', err);
+          };
         });
       });
     }

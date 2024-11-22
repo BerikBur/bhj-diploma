@@ -20,7 +20,7 @@ class User {
    * */
   static unsetCurrent() {
     localStorage.clear();
-    localStorage.setItem('logout', 'true');
+    //localStorage.setItem('logout', 'true');
   }
 
   /**
@@ -28,22 +28,31 @@ class User {
    * из локального хранилища
    * */
   static current() {
-    return createRequest({
-      url: `${this.URL}/current`,
-      method: 'GET'
-    });
+    //console.log('Current user from localStorage:', localStorage.getItem('currentUser'));
+    const userJSON = localStorage.getItem('currentUser');
+    return userJSON ? JSON.parse(userJSON) : null;
   }
 
   /**
    * Получает нформацию о текущем
    * авторизованном ползователе.
    * */
-  static fetch(callback) {
-    const user = this.current();
-    if(user) {
-      callback(null, user);
-    } else {
-      callback(new Error('Нет авторизованного пользователя'));
+  static async fetch(callback) {
+    try {
+      const response = await createRequest({
+        url: `${this.URL}/current`,
+        method: 'GET'
+      });
+      
+      if (response && response.success) {
+        this.setCurrent(response.user);
+      } else {
+        this.unsetCurrent();
+      }
+      callback(null, response);
+    } catch (err) {
+      this.unsetCurrent();
+      callback(err, null);
     }
   }
 
@@ -53,42 +62,67 @@ class User {
    * сохранить пользователя через метод
    * User.setCurrent.
    * */
-  static login(data) {
-    return createRequest({
+  static async login(data) {
+    const response = await createRequest({
       url: this.URL + '/login',
       method: 'POST',
       data
     });
+    if (response.success) {
+      this.setCurrent(response.user);
+      App.update();
+    }
+    return response;
   }
 
   /**
    * Производит попытку регистрации пользователя.
-   * После успешной авторизации необходимо
+   * После успешной регистрации необходимо
    * сохранить пользователя через метод
    * User.setCurrent.
    * */
-  static register(data) {
-    return createRequest({
-      url: this.URL + '/register',
-      method: 'POST',
-      data
-    });
+  static async register(data) {
+    console.log('User.register called with data:', data);
+    try {
+        const response = await createRequest({
+            url: this.URL + '/register',
+            method: 'POST',
+            data
+        });
+        
+        console.log('Register response:', response);
+        
+        if (response && response.success) {
+            console.log('Success, setting current user');
+            this.setCurrent(response.user);
+            return response;
+        } else {
+            console.log('Response not successful:', response);
+            throw new Error(response?.error || 'Ошибка регистрации');
+        }
+    } catch (error) {
+        console.log('Register error:', error);
+        throw error;
+    }
   }
 
   /**
    * Производит выход из приложения. После успешного
    * выхода необходимо вызвать метод User.unsetCurrent
    * */
-  static logout(callback) {
-    return createRequest({
-      url: `${this.URL}/logout`,
-      method: 'POST',
-      callback: (err, response) => {
-        if (response && response.success) {
-          this.unsetCurrent();
-        }
-        callback(err, response);
-      }
-    });
+  static async logout(callback) {
+    try {
+      const response = await createRequest({
+        url: `${this.URL}/logout`,
+        method: 'POST',
+      });
+
+      if (response && response.success) {
+        this.unsetCurrent();
+      };
+      callback(null, response);
+    } catch (error) {
+      callback(error, null);
+    }
   }
 }

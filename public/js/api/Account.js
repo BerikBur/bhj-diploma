@@ -9,55 +9,60 @@ class Account extends Entity {
   /**
    * Получает информацию о счёте
    * */
-  static get(id) {
-    return createRequest({
-      url: `${this.URL}/${id}`,
-      method: 'GET'
-    });
+  static async get(id) {
+    try {
+      const response = await createRequest({
+        url: `${this.URL}/${id}`,
+        method: 'GET' 
+      });
+
+      if (response && response.success) {
+        return response;
+      }
+    } catch (error) {
+      throw new Error('Ошибка', error);
+    } 
   }
 
-  static list(attempt = 1, maxAttempts = 3) {
-    return createRequest({
-      url: this.URL,
-      method: 'GET'
-    })
-    .then(response => {
-      if (response?.data) {
-        return response.data;
-      }
-      return [];
-    })
-    .catch(err => {
-      if (attempt < maxAttempts) {
-        // Повторяем запрос через небольшую задержку
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve(this.list(attempt + 1, maxAttempts));
-          }, 1000);
-        });
-      }
+  static async list(data) {
+    try {
+      const response = await createRequest({
+        url: this.URL,
+        method: 'GET',
+        data
+      });
+      return response;
+    } catch (err) {
       throw err;
-    });
+    }
   }
 
-  static create(data) {
-    return createRequest({
-      url: this.URL,
-      method: 'PUT',
-      data: {
-        name: data.name
-      }
-    });
+  static async create(data) {
+    try {
+      return await createRequest({
+        url: this.URL,
+        method: 'PUT',
+        data: {
+          name: data.name
+        }
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
-  static remove(id) {
-    const formData = new FormData();
-    formData.append('id', id);
-    
-    return createRequest({
-      url: this.URL,
-      method: 'DELETE',
-      data: formData
-    });
+  static async remove(id) {
+    try {
+      const formData = new FormData();
+      formData.append('id', id);
+      
+      return await createRequest({
+        url: this.URL,
+        method: 'DELETE',
+        data: formData
+      });
+    } catch (err) {
+      throw new Error('Ошибка при удалении счёта', err);
+    }
   }
 }

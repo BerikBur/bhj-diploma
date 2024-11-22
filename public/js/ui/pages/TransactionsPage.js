@@ -12,7 +12,7 @@ class TransactionsPage {
    * */
   constructor( element ) {
     if (!element) {
-      throw new Error('Element not found');
+      throw new Error('Элемент не передан');
     }
     this.element = element;
     this.lastOptions = null;
@@ -26,7 +26,7 @@ class TransactionsPage {
     if (this.lastOptions) {
       setTimeout(() => {
         this.render(this.lastOptions);
-      }, 300);
+      }, 200);
     }
   }
 
@@ -37,18 +37,20 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
-    this.element.addEventListener('click', e => {
-      const removeAccount = e.target.closest('.remove-account');
-      if (removeAccount) {
-        e.preventDefault();
-        this.removeAccount();
-      }
-
-      const removeTransaction = e.target.closest('.transaction__remove');
-      if (removeTransaction) {
-        e.preventDefault();
-        this.removeTransaction(removeTransaction.dataset.id);
-      }
+    // Обработчик удаления счета
+    document.querySelector('.remove-account').addEventListener('click', () => {
+      this.removeAccount();
+    });
+    
+    // Обработчик удаления транзакций
+    document.querySelector('.content-wrapper').addEventListener('click', e => {
+        const transactionRemoveButton = e.target.closest('.transaction__remove');
+        if (transactionRemoveButton) {
+            e.preventDefault();
+            e.stopPropagation(); // Предотвращаем всплытие события
+            const transactionId = transactionRemoveButton.dataset.id;
+            this.removeTransaction(transactionId);
+        }
     });
   }
 
@@ -61,46 +63,30 @@ class TransactionsPage {
    * либо обновляйте только виджет со счетами и формы создания дохода и расхода
    * для обновления приложения
    * */
-  removeAccount() {
+  async removeAccount() {
     if (!this.lastOptions) {
-      return;
+        throw new Error('Не переданы данные счета');
     }
 
-    if (confirm('Вы действительно хотите удалить счёт?')) {
-      Account.remove(this.lastOptions.account_id)
-        .then(response => {
-          if (response && response.success) {
+    if (!confirm('Вы действительно хотите удалить счёт?')) {
+        return;
+    }
+
+    try {
+        const response = await Account.remove(this.lastOptions.account_id);
+        if (response && response.success) {
             this.clear();
-            setTimeout(() => {
-              App.updateWidgets();
-              setTimeout(() => {
-                App.updateForms();
-                setTimeout(() => {
-                  document.location.href = '#/accounts';
-                }, 300);
-              }, 300);
-            }, 300);
-          } else {
-            throw new Error(response?.error || 'Не удалось удалить счёт');
-          }
-        })
-        .catch(err => {
-          console.error('Error removing account:', err);
-          if (err.message.includes('404')) {
-            this.clear();
-            setTimeout(() => {
-              App.updateWidgets();
-              setTimeout(() => {
-                App.updateForms();
-                setTimeout(() => {
-                  document.location.href = '#/accounts';
-                }, 300);
-              }, 300);
-            }, 300);
-          } else {
-            alert('Не удалось удалить счёт');
-          }
-        });
+            try {
+                await App.updateWidgets();
+                await App.updateForms();
+            } catch (updateError) {
+                console.error('Ошибка при обновлении интерфейса:', updateError);
+                alert('Счёт удален, но не удалось обновить интерфейс. Пожалуйста, перезагрузите страницу.');
+            }
+        }
+    } catch (err) {
+        console.error('Ошибка при удалении счета:', err);
+        alert('Не удалось удалить счёт');
     }
   }
 
@@ -108,11 +94,11 @@ class TransactionsPage {
    * Удаляет транзакцию (доход или расход). Требует
    * подтверждеия действия (с помощью confirm()).
    * По удалению транзакции вызовите метод App.update(),
-   * либо обновляйте текущую страницу (метод update) и виджет со счетами
+   * либо обновляйте ткщую страницу (метод update) и виджет со счетами
    * */
   removeTransaction(id) {
     if (!id) {
-      console.error('No transaction ID provided');
+      console.error('Не передан ID транзакции');
       return;
     }
 
@@ -134,46 +120,42 @@ class TransactionsPage {
           }
         })
         .catch(err => {
-          console.error('Error removing transaction:', err);
           alert('Не удалось удалить транзакцию');
         });
     }
   }
 
   /**
-   * С помощью Account.get() получает название счёта и отображает
+   * С помощью Account.get() получает навание счёта и отображает
    * его через TransactionsPage.renderTitle.
    * Получает список Transaction.list и полученные данные передаёт
    * в TransactionsPage.renderTransactions()
    * */
-  render(options) {
-    if (!options || !options.account_id) {
-      return;
+  async render(options) {
+    console.log('render', options);
+    
+    if (!options) {
+      throw new Error('Не передан id счета');
     }
 
     this.lastOptions = options;
+    
+    try {
+        // Получаем информацию о счете
+        const response = await Account.get(options.account_id);
+        console.log('TransactionsPage got response:', response);
+        if (response && response.success) {
+            const account = response.data;
+            
+            this.renderTitle(account.name);
 
-    Account.get(options.account_id)
-      .then(account => {
-        if (!account) {
-          return Promise.reject(new Error('Account not found'));
-        }
-        if (account.name) {
-          this.renderTitle(account.name);
-        } else {
-          console.error('Account name is missing:', account);
-          this.renderTitle('Название счёта');
-        }
-
-        return Transaction.list(options.account_id);
-      })
-      .then(transactions => {
-        this.renderTransactions(transactions);
-      })
-      .catch(err => {
-        console.error('Error rendering transactions page:', err);
-        this.clear();
-      });
+            // Получаем список транзакций
+            const transactionsResponse = await Transaction.list(options.account_id);
+            this.renderTransactions(transactionsResponse);
+        };
+    } catch (err) {
+        throw new Error ('Ошибка при загрузке данных:', err);
+    }
   }
 
   /**
@@ -182,14 +164,14 @@ class TransactionsPage {
    * Устанавливает заголовок: «Название счёта»
    * */
   clear() {
-    // Возвращаем страницу к изначальному состоянию
-    this.element.innerHTML = `
-        <div class="content-wrapper">
+    const contentWrapper = this.element.querySelector('.content-wrapper');
+    if (contentWrapper) {
+        contentWrapper.innerHTML = `
             <section class="content-header">
                 <h1>
-                    <span class="content-title">Название счёта</span>
-                    <small class="content-description">Счёт</small>
-                    <button class="btn btn-danger remove-account">
+                    <span class="content-title"></span>
+                    <small class="content-description"></small>
+                    <button class="btn btn-danger remove-account" style="display: none;">
                         <span class="fa fa-trash"></span>
                         Удалить счёт
                     </button>
@@ -197,16 +179,12 @@ class TransactionsPage {
             </section>
             <section class="content">
             </section>
-        </div>`;
-
-    // Скрываем кнопку удаления счета
-    const removeButton = this.element.querySelector('.remove-account');
-    if (removeButton) {
-        removeButton.style.display = 'none';
+        `;
     }
-
-    // Очищаем сохраненные опции
     this.lastOptions = null;
+    
+    // Вызываем renderTransactions с пустым массивом
+    this.renderTransactions([]);
   }
 
   /**
@@ -226,7 +204,7 @@ class TransactionsPage {
     // Показываем кнопку удаления счета, так как счет выбран
     const removeButton = this.element.querySelector('.remove-account');
     if (removeButton) {
-        removeButton.style.display = 'block';
+        removeButton.style.display = 'inline-block';
     }
   }
 
@@ -286,7 +264,7 @@ class TransactionsPage {
   renderTransactions(data) {
     const content = this.element.querySelector('.content');
     if (!content) {
-      return;
+      throw new Error('Не передан элемент .content');
     }
 
     if (data.length) {

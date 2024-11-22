@@ -15,37 +15,45 @@ class RegisterForm extends AsyncForm {
    * и закрывает окно, в котором находится форма
    * */
   //Вызвать функцию асинхронно
-  onSubmit(data) {
-    return User.register({
-      name: data.name.trim(),
-      email: data.email.trim().toLowerCase(),
-      password: data.password
-    });
-  }
-
-  success(response) {
-    if (response && response.success) {
-      App.getModal('register').close();
-      
-      // Сначала получаем данные пользователя
-      User.current()
-        .then(user => {
-          if (user) {
-            // Только после успешного получения данных пользователя меняем состояние
-            App.setState('user-logged');
-          } else {
-            // Если не удалось получить данные, пробуем еще раз через секунду
-            setTimeout(() => {
-              User.current().then(user => {
-                if (user) {
-                  App.setState('user-logged');
-                }
-              });
-            }, 1000);
-          }
+  async onSubmit(data) {
+    console.log('onSubmit started');
+    try {
+        console.log('Sending register request with data:', data);
+        const response = await User.register({
+            name: data.name.trim(),
+            email: data.email.trim().toLowerCase(),
+            password: data.password
         });
-    } else {
-      throw new Error('Ошибка регистрации');
+        
+        console.log('Got response:', response);
+        
+        if (response && response.success) {
+            console.log('Перед закрытием модального окна');
+            const modal = App.getModal('register');
+            console.log('Модальное окно:', modal);
+            modal.close();
+            console.log('После закрытия модального окна');
+            
+            const user = User.current();
+            if (user) {
+                App.setState('user-logged');
+            } else {
+                setTimeout(() => {
+                    const user = User.current();
+                    if (user) {
+                        App.setState('user-logged');
+                    }
+                }, 1000);
+            }
+            
+            return response;
+        } else {
+            console.log('Response not successful:', response);
+        }
+    } catch (error) {
+        console.log('Caught error:', error);
+        this.error(error);
+        throw error;
     }
   }
 

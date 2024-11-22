@@ -13,7 +13,7 @@ class UserWidget {
    * */
   constructor(element){
     if (!element) {
-      throw new Error('Element not found');
+      throw new Error('Элемента нет - не передан');
     }
     this.element = element;
   }
@@ -26,17 +26,15 @@ class UserWidget {
    * авторизованного пользователя
    * */
   update(){
-    User.current()
-      .then(response => {
-        if (response && response.success && response.user) {
-          const userNameElement = this.element.querySelector('.user-name');
-          if (userNameElement) {
-            userNameElement.textContent = response.user.name;
-          }
+    const user = User.current();    
+    const userNameElement = this.element.querySelector('.user-name');
+    
+    if (userNameElement) {
+        if (user) {
+            userNameElement.textContent = user.name;
+        } else {
+            userNameElement.textContent = 'Имя пользователя';
         }
-      })
-      .catch(err => {
-        console.error('Error updating user widget:', err);
-      });
+    }
   }
 }
